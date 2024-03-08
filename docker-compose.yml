@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  web-app:
+    build:
+      context: ./.devcontainer/node-container/.
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspace:cached
+    command: sleep infinity
+    network_mode: service:db
+
+  ros:
+    build:
+      context: ./.devcontainer/ros-container/.
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspace
+    command: sleep infinity
+    networks:
+      - dev-network
+
+  db:
+    image: mongo:latest
+    restart: unless-stopped
+    volumes:
+      - mongodb-data:/data/db
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: test
+
+volumes:
+  mongodb-data:
+
+
+networks:
+  dev-network:
